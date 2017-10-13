@@ -1,6 +1,9 @@
 *{
   padding: 0;
   margin:0;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
 }
 html,body{
   height: 100%;
@@ -14,7 +17,7 @@ html,body{
 .img-state{
   position: relative;
   width: 100%;
-  height: 700px;
+  height: 974px;
 }
 .img-list{
   position: relative;
@@ -23,6 +26,31 @@ html,body{
   overflow: hidden;
   background-color: #ddd;
 }
+.img-list .img-figure{
+  width: 320px;
+  height: 360px;
+  margin:0;
+  padding:40px;
+  background: #fff;
+  position: absolute;
+}
+.img-list .img-figure img{
+  width: 100%;
+  height:240px;
+}
+.img-figure figcaption{
+  text-align: center;
+}
+.img-title{
+  margin:20px 0 0 0;
+  color: #a7a0a2;
+  font-size: 16px;
+}
+
+
+
+
+
 .img-nav{
   position: absolute;
   left: 0;
