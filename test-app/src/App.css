@@ -10,6 +10,11 @@ html,body{
   width: 100%;
   background: #bfbfbf;
 }
+/* @font-face{
+  font-family: "icons-arrow";
+  src:url("fonts/icons/turn-arrow.eot") format("embedded-opentype"),url("fonts/icons/turn-arrow.woff") format("woff"),
+      url("fonts/icons/turn-arrow.ttg") format("truetype"),url("fonts/icons/turn-arrow.svg") format('svg');
+} */
 .app{
   height: 100%;
   width: 100%;
@@ -36,7 +41,7 @@ html,body{
   cursor: pointer;
   transform-origin: 0 50% 0;
   transform-style: preserve-3d;
-  transition: 0.3s;
+  transition:all 0.6s;
 }
 .img-list .img-figure img{
   width: 100%;
@@ -76,4 +81,25 @@ html,body{
 }
 .is-inverse{
   transform: translateX(320px) rotateY(180deg);
+}
+.img-nav span.controll-unit{
+  display: inline-block;
+  width: 30px;
+  height: 30px;
+  margin:0 5px;
+  text-align: center;
+  background: #aaa;
+  border-radius: 50%;
+  cursor: pointer;
+  vertical-align: middle;
+  transform: scale(0.5);
+  transition: all 0.6s;
+}
+.img-nav span.controll-unit.is-center{
+  transform: scale(1);
+  background: skyblue;
+}
+.img-nav span.controll-unit.is-inverses{
+  transform: rotateY(180deg);
+  background: green;
 }

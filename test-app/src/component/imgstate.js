@@ -21,11 +21,10 @@ class ImgList extends Component{
 		}
 		//如果图片旋转角度有值，并且不为0，就添加角度
 		if(this.props.arrange.rotate){
-			['-moz-transform','-ms-transform','-webkit-transform','transform'].forEach(function(value){
-		        // styleObj[value] = 
+			['MozTransform','msTransform','WebkitTransform','transform'].forEach(function(value){
+		        styleObj[value] = 'rotate('+this.props.arrange.rotate+'deg)'
 		        styleObj = {
-		        	...styleObj,
-		        	value:'rotate('+this.props.arrange.rotate+'deg)'
+		        	...styleObj
 		        }
 		    }.bind(this));
 		}
@@ -58,6 +57,30 @@ class ImgList extends Component{
 	}
 }
 
+//控制组件
+class ControllUnits extends Component{
+	handleClik(e){
+		if(this.props.arrange.isCenter){
+			this.props.inVerses()
+		}else{
+			this.props.center()
+		}
+		e.stopPropagation();
+		e.preventDefault();
+	}
+	render(){
+		var controllUnitsClassName = "controll-unit";
+			if(this.props.arrange.isCenter){
+				controllUnitsClassName+=" is-center";
+				if(this.props.arrange.inVerse){
+					controllUnitsClassName+=" is-inverses";
+				}
+			}
+		return(
+			<span className={controllUnitsClassName} onClick = {this.handleClik.bind(this)}></span>
+		)
+	}
+}
 
 
 class ImgState extends Component{
@@ -131,7 +154,7 @@ class ImgState extends Component{
 			vPosRangeX = vPosRange.x,
 
 			imgsArrangeTopArr = [],//上册区域图片的状态信息
-			topImgNum = Math.ceil(Math.random()*2),//取一个或者不取
+			topImgNum = Math.floor(Math.random()*2),//取一个或者不取
 			topImgSpliceIndex = 0,//布局上册图片的下标
 			imgsArrangeCenterArr = imgsArrangeArr.splice(centerIndex,1)//居中图片
 
@@ -228,6 +251,7 @@ class ImgState extends Component{
 
 	render(){
 		let imgFigures = [];
+		let controllUnits = [];
 		imagesData.forEach(function (imgs, index) {
 			if(!this.state.imgsArrangeArr[index]){
 				this.state.imgsArrangeArr[index]={
@@ -241,6 +265,7 @@ class ImgState extends Component{
 				}
 			}
 			imgFigures.push(<ImgList key={index} imgsList = {imgs} ref={"imgFigures"+index} arrange = {this.state.imgsArrangeArr[index]}  inVerses = {this.inVerses(index).bind(this)} center={this.center(index).bind(this)}/>)
+			controllUnits.push(<ControllUnits key={index} arrange = {this.state.imgsArrangeArr[index]} inVerses = {this.inVerses(index).bind(this)} center = {this.center(index).bind(this)}/>)
 		}.bind(this))
 		return(
 			<section className="img-state" ref="stages">
@@ -249,7 +274,9 @@ class ImgState extends Component{
 						imgFigures
 					}
 				</section>
-				<nav className="img-nav"></nav>
+				<nav className="img-nav">
+					{controllUnits}
+				</nav>
 			</section>
 		)
 	}
