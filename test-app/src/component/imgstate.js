@@ -3,6 +3,15 @@ import imagesData from '../imagesData/imagesData.json'
 
 //图片详情
 class ImgList extends Component{
+	handleClik(e){
+		if(this.props.arrange.isCenter){
+			this.props.inVerses()
+		}else{
+			this.props.center()
+		}
+		e.stopPropagation();
+		e.preventDefault();
+	}
 	render(){
 		const {imgsList} = this.props;
 		var styleObj = {};
@@ -10,11 +19,39 @@ class ImgList extends Component{
 		if(this.props.arrange.pos){
 			styleObj = this.props.arrange.pos
 		}
+		//如果图片旋转角度有值，并且不为0，就添加角度
+		if(this.props.arrange.rotate){
+			['-moz-transform','-ms-transform','-webkit-transform','transform'].forEach(function(value){
+		        // styleObj[value] = 
+		        styleObj = {
+		        	...styleObj,
+		        	value:'rotate('+this.props.arrange.rotate+'deg)'
+		        }
+		    }.bind(this));
+		}
+		if(this.props.arrange.isCenter){
+			 styleObj = {
+		        	...styleObj,
+		        	value:'rotate('+this.props.arrange.rotate+'deg)',
+		        	zIndex:11
+		        }
+		}else{
+			styleObj = {
+		        	...styleObj,
+		        	value:'rotate('+this.props.arrange.rotate+'deg)',
+		        	zIndex:0
+		        }
+		}
+		var imgFigureClassName = 'img-figure';
+			imgFigureClassName += this.props.arrange.inVerse?' is-inverse':''
 		return(
-			<figure className='img-figure' style = {styleObj} ref="figure">
-				<img src={imgsList.fileName}/>
+			<figure className={imgFigureClassName} style = { styleObj } ref="figure" onClick = {this.handleClik.bind(this)}>
+				<img src={imgsList.fileName} alt = {imgsList.fileName} />
 				<figcaption>
 					<h2 className="img-title">{imgsList.title}</h2>
+					<div className="img-back" onClick = {this.handleClik.bind(this)}>
+						{imgsList.desc}
+					</div>
 				</figcaption>
 			</figure>
 		)
@@ -32,7 +69,10 @@ class ImgState extends Component{
 					pos:{
 						left:0,
 						top:0
-					}
+					},
+					rotate:0,//旋转角度,
+					inVerse:false,//图片正反面
+					isCenter:false//图片是否居中
 				}*/
 			]
 		}
@@ -57,6 +97,26 @@ class ImgState extends Component{
 	getRangeRandom(low,high){
 		return Math.ceil(Math.random()*(high-low)+low);
 	}
+	//获取0-30度之间的任意正副职
+	get30DegRandom(){
+		return 	((Math.random()>0.5?"":"-")+Math.ceil(Math.random()*30))
+	}
+	// 图片翻转
+	inVerses(index){
+		return function(){
+			var imgsArrangeArr = this.state.imgsArrangeArr;
+				imgsArrangeArr[index].inVerse = !imgsArrangeArr[index].inVerse;
+				this.setState({
+					imgsArrangeArr:imgsArrangeArr
+				})
+		}.bind(this)
+	}
+	//juzhong
+	center(index){
+		return function(){
+			this.rearRange(index)
+		}.bind(this)
+	}
 	// 重新布局所有图片，centerIndex为居中位置下标
 	rearRange(centerIndex){
 		var imgsArrangeArr = this.state.imgsArrangeArr,
@@ -76,16 +136,27 @@ class ImgState extends Component{
 			imgsArrangeCenterArr = imgsArrangeArr.splice(centerIndex,1)//居中图片
 
 			//居中centerindex图片
-			imgsArrangeCenterArr[0].pos = centerPos;
+			//imgsArrangeCenterArr[0].pos = centerPos;
+			//居中位置图片没有旋转
+			//imgsArrangeCenterArr[0].rotate = 0;
+			imgsArrangeCenterArr[0] = {
+				pos:centerPos,
+				rotate:0,
+				isCenter:true
+			}
 
 			//取出要布局上册图片的状态信息
 			topImgSpliceIndex = Math.ceil(Math.random()*(imgsArrangeArr.length - topImgNum));
 			imgsArrangeTopArr = imgsArrangeArr.splice(topImgSpliceIndex,topImgNum);
 			//布局位于上册的图片
 			imgsArrangeTopArr.forEach(function(value,index){
-				imgsArrangeTopArr[index].pos = {
-					top:this.getRangeRandom(vPosRangeTopY[0],vPosRangeTopY[1]),
-					left:this.getRangeRandom(vPosRangeX[0],vPosRangeX[1])
+				imgsArrangeTopArr[index] = {
+					pos : {
+						top:this.getRangeRandom(vPosRangeTopY[0],vPosRangeTopY[1]),
+						left:this.getRangeRandom(vPosRangeX[0],vPosRangeX[1])
+					},
+					rotate:this.get30DegRandom(),
+					isCenter:false
 				}
 			}.bind(this))
 
@@ -98,9 +169,13 @@ class ImgState extends Component{
 				}else{
 					hPosRangeLorX = hPosRangeRightSecX;
 				}
-				imgsArrangeArr[i].pos = {
-					top:this.getRangeRandom(hPosRangeY[0],hPosRangeY[1]),
-					left:this.getRangeRandom(hPosRangeLorX[0],hPosRangeLorX[1])
+				imgsArrangeArr[i] = {
+					pos : {
+						top:this.getRangeRandom(hPosRangeY[0],hPosRangeY[1]),
+						left:this.getRangeRandom(hPosRangeLorX[0],hPosRangeLorX[1])
+					},
+					rotate:this.get30DegRandom(),
+					isCenter:false
 				}
 			}
 			// 合并
@@ -159,10 +234,13 @@ class ImgState extends Component{
 					pos:{
 						left:0,
 						top:0
-					}
+					},
+					rotate:0,
+					inVerse:false,
+					isCenter:false
 				}
 			}
-			imgFigures.push(<ImgList key={index} imgsList = {imgs} ref={"imgFigures"+index} arrange = {this.state.imgsArrangeArr[index]}/>)
+			imgFigures.push(<ImgList key={index} imgsList = {imgs} ref={"imgFigures"+index} arrange = {this.state.imgsArrangeArr[index]}  inVerses = {this.inVerses(index).bind(this)} center={this.center(index).bind(this)}/>)
 		}.bind(this))
 		return(
 			<section className="img-state" ref="stages">

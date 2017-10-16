@@ -33,6 +33,10 @@ html,body{
   padding:40px;
   background: #fff;
   position: absolute;
+  cursor: pointer;
+  transform-origin: 0 50% 0;
+  transform-style: preserve-3d;
+  transition: 0.3s;
 }
 .img-list .img-figure img{
   width: 100%;
@@ -58,4 +62,18 @@ html,body{
   z-index: 101;
   width: 100%;
   text-align: center;
+}
+.img-back{
+  position: absolute;
+  width: 100%;
+  left: 0;
+  height: 100%;
+  top:0;
+  padding: 20px 0;
+  background: #fff;
+  transform: rotateY(180deg) translateZ(1px);
+  backface-visibility: hidden;
+}
+.is-inverse{
+  transform: translateX(320px) rotateY(180deg);
 }
