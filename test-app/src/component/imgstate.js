@@ -5,8 +5,13 @@ import imagesData from '../imagesData/imagesData.json'
 class ImgList extends Component{
 	render(){
 		const {imgsList} = this.props;
+		var styleObj = {};
+		//如果props属性中指定了这种图片位置，则使用
+		if(this.props.arrange.pos){
+			styleObj = this.props.arrange.pos
+		}
 		return(
-			<figure className='img-figure'>
+			<figure className='img-figure' style = {styleObj} ref="figure">
 				<img src={imgsList.fileName}/>
 				<figcaption>
 					<h2 className="img-title">{imgsList.title}</h2>
@@ -85,7 +90,7 @@ class ImgState extends Component{
 			}.bind(this))
 
 			//布局左右两侧
-			for(var i=0;j = imgsArrangeArr.length,k= j/2;i<j;i++){
+			for(var i=0,j = imgsArrangeArr.length,k= j/2;i<j;i++){
 				var hPosRangeLorX = null;
 				//前半部分左边，后半部分右边
 				if(i<k){
@@ -118,7 +123,7 @@ class ImgState extends Component{
 			halfStageW = Math.ceil(stageW/2),
 			halfStageH = Math.ceil(stageH/2);
 		//firgure的大小
-		var imgFigureDOM = this.refs.imgFigure0,
+		var imgFigureDOM = this.refs.imgFigures0.refs.figure,
 			imgW = imgFigureDOM.scrollWidth,
 			imgH = imgFigureDOM.scrollHeight,
 			halfImgW = Math.ceil(imgW/2),
@@ -142,28 +147,28 @@ class ImgState extends Component{
 		this.Constant.vPosRange.topY[1] = halfStageH - halfImgH * 3;
 		this.Constant.vPosRange.x[0] = halfStageW - imgW;
 		this.Constant.vPosRange.x[1] = halfStageW;
-
 		this.rearRange(0)
 	}
 
 
 	render(){
+		let imgFigures = [];
+		imagesData.forEach(function (imgs, index) {
+			if(!this.state.imgsArrangeArr[index]){
+				this.state.imgsArrangeArr[index]={
+					pos:{
+						left:0,
+						top:0
+					}
+				}
+			}
+			imgFigures.push(<ImgList key={index} imgsList = {imgs} ref={"imgFigures"+index} arrange = {this.state.imgsArrangeArr[index]}/>)
+		}.bind(this))
 		return(
 			<section className="img-state" ref="stages">
 				<section className="img-list">
 					{
-						imagesData.map(function(imgs,index){
-							if(!this.state.imgsArrangeArr[index]){
-								this.state.imgsArrangeArr[index]={
-									pos:{
-										left:0,
-										top:0
-									}
-								}
-							}
-				            return(<ImgList key={index} imgsList = {imgs} ref = {"imgFigure"+index} arrange = {this.state.imgsArrangeArr[index]}/>)
-						
-				        }.bind(this))
+						imgFigures
 					}
 				</section>
 				<nav className="img-nav"></nav>
